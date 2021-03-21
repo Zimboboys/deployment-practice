@@ -7,7 +7,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - id: backend-deployment
-      uses: Zimboboys/express-deployment-aws@v0
+      uses: Zimboboys/express-deployment-aws@v0.0.1
       with:
         s3-bucket: 'simple-api-practice'
         region: 'us-east-1'

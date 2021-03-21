@@ -1,0 +1,16 @@
+on: [push]
+
+jobs:
+  deploy:
+    name: Deployment
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - id: backend-deployment
+      uses: Zimboboys/express-deployment-aws@v0
+      with:
+        s3-bucket: 'simple-api-practice'
+        region: 'us-east-1'
+        stack-name: 'simple-api'
+    - run: echo URL: ${{ steps.backend-deployment.outputs.api-url }}
+      shell: bash

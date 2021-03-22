@@ -6,11 +6,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
     - id: backend-deployment
-      uses: Zimboboys/express-deployment-aws@v0.0.1
+      uses: Zimboboys/express-deployment-aws@v0.0.2
       with:
         s3-bucket: 'simple-api-practice'
         region: 'us-east-1'
         stack-name: 'simple-api'
+
     - run: echo API is at ${{ steps.backend-deployment.outputs.api-url }}
       shell: bash

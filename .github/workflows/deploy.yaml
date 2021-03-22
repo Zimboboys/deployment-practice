@@ -20,6 +20,8 @@ jobs:
         s3-bucket: 'simple-api-practice'
         region: 'us-east-1'
         stack-name: 'simple-api'
+      env:
+        NAME: 'Ethan'
 
     - run: echo API is at ${{ steps.backend-deployment.outputs.api-url }}
       shell: bash

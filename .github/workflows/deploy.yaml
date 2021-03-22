@@ -15,10 +15,9 @@ jobs:
         aws-region: us-east-1
 
     - id: backend-deployment
-      uses: Zimboboys/express-deployment-aws@v0.0.4
+      uses: Zimboboys/express-deployment-aws@v0.0.5
       with:
         s3-bucket: 'simple-api-practice-new'
-        region: 'us-east-1'
         stack-name: 'simple-api-new'
       env:
         NAME: 'Ethan'

@@ -15,12 +15,12 @@ jobs:
         aws-region: us-east-1
 
     - id: backend-deployment
-      uses: Zimboboys/express-deployment-aws@v0.0.5
+      uses: Zimboboys/express-deployment-aws@v0.1.0
       with:
         s3-bucket: 'simple-api-practice-new'
         stack-name: 'simple-api-new'
       env:
-        NAME: 'Ethan'
+        NAME: 'Ethan Z'
 
     - run: echo API is at ${{ steps.backend-deployment.outputs.api-url }}
       shell: bash

@@ -28,6 +28,7 @@ jobs:
         s3-bucket: 'clicker-frontend'
       env:
         REACT_APP_SERVER_URL: ${{ steps.backend-deployment.outputs.api-url }}
+        SKIP_PREFLIGHT_CHECK: true
 
     - run: echo API is at ${{ steps.backend-deployment.outputs.api-url }}
       shell: bash

@@ -1,13 +1,29 @@
 const express = require('express');
+const mongoose = require('mongoose');
 require('dotenv').config();
+
 const routes = require('./routes');
 
 const app = express();
 
+mongoose.connect(process.env.DATABASE_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
+})
+.then(() => console.log('connected to DB'))
+.catch((e) => console.error(e));
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.use(express.json());
 
-app.get('/', (req, res) => res.json({ msg: 'Hello from Express!' }));
-app.use('/api', routes);
+app.use('/', routes);
 
 if (process.argv.includes('dev')) {
   const PORT = process.env.PORT || 3001;

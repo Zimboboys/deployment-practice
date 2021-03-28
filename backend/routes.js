@@ -3,10 +3,21 @@ const controllers = require('./controllers');
 
 const router = express.Router();
 
-router.get('/', (req, res) => res.json({ msg: 'Hi from the API' }));
+router.get('/', async (req, res) => {
+  const clicks = await controllers.getClicks();
+  res.json(clicks);
+});
 
-router.get('/name', (req, res) => res.json({ name: process.env.NAME }));
+router.post('/push', async (req, res) => {
+  const { session } = req.body;
+  const clicks = await controllers.addClick(session);
+  res.json(clicks);
+});
 
-router.post('/square', controllers.square);
+router.get('/sum', async (req, res) => {
+  const clicks = await controllers.totalClicks();
+  const sum = clicks[0].clicks;
+  res.json({ sum });
+});
 
 module.exports = router;

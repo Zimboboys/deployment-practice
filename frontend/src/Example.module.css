@@ -1,0 +1,18 @@
+.layout {
+  text-align: center;
+}
+
+.desc {
+  max-width: 480px;
+  margin: 60px auto 40px;
+  padding: 0 30px;
+}
+
+.button {
+  border: none;
+  padding: 10px 24px;
+}
+
+.button:active {
+  background-color: #DDDDDD;
+}

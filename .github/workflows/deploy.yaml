@@ -17,10 +17,17 @@ jobs:
     - id: backend-deployment
       uses: Zimboboys/express-deployment-aws@v0.1.0
       with:
-        s3-bucket: 'simple-api-practice-new'
-        stack-name: 'simple-api-new'
+        s3-bucket: 'clicker-api'
+        stack-name: 'clicker-api-proj'
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    - id: frontend-deployment
+      uses: Zimboboys/react-deployment-aws@v0.0.1
+      with:
+        s3-bucket: 'clicker-frontend'
+      env:
+        REACT_APP_SERVER_URL: ${{ steps.backend-deployment.outputs.api-url }}
 
     - run: echo API is at ${{ steps.backend-deployment.outputs.api-url }}
       shell: bash

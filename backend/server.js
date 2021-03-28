@@ -6,13 +6,11 @@ const routes = require('./routes');
 
 const app = express();
 
-mongoose.createConnection(process.env.DATABASE_URL, {
+mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
   useCreateIndex: true,
-  bufferCommands: false,
-  bufferMaxEntries: 0,
 })
 .then(() => console.log('connected to DB'))
 .catch((e) => console.error(e));

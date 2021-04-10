@@ -17,8 +17,8 @@ jobs:
     - id: backend-deployment
       uses: Zimboboys/express-deployment-aws@v0.1.0
       with:
-        s3-bucket: 'example-deployment'
-        stack-name: 'example-deployment-proj'
+        s3-bucket: 'example-api-deployment'
+        stack-name: 'example-api-deployment-proj'
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
 

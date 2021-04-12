@@ -85,7 +85,10 @@ The following code should be good enough to copy and paste into this new file.
 As always, modify this as needed.
 
 ```
-on: [push]
+on:
+  push:
+    branches:
+    - main
 
 jobs:
   deploy:

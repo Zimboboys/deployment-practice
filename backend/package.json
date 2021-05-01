@@ -12,6 +12,7 @@
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
+    "mongodb-client-encryption": "^1.2.3",
     "mongoose": "^5.12.2"
   },
   "devDependencies": {

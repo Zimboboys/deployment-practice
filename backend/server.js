@@ -7,16 +7,15 @@ require('dotenv').config();
 const routes = require('./routes');
 
 // Authentication
-const ejwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const passportLocalMongoose = require('passport-local-mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { auth, JWT_secret } = require('./auth');
 
 const { User } = require('./models');
-
 
 // Standard web server stuff
 const app = express();
@@ -33,6 +32,7 @@ mongoose.connect(process.env.DATABASE_URL, {
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Referrer-Policy", "same-origin");
   next();
 });
 
@@ -41,8 +41,6 @@ app.use(cookieParser());
 
 
 // Auth config
-const JWT_secret = process.env.JWT_SECRET || 'secretkey';
-
 passport.use(User.createStrategy());
 
 passport.use(new GoogleStrategy({
@@ -52,41 +50,32 @@ passport.use(new GoogleStrategy({
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
+    const name = profile.name.givenName || profile.displayName;
     const user = {
       googleId: profile.id,
-      name: profile.displayName,
+      name: name
     };
 
     User.findOrCreate(user, (err, user) => cb(err, user));
   }
 ));
 
-// Auth middleware
-const jwt_options = {
-  secret: JWT_secret,
-  algorithms: ['sha1', 'RS256', 'HS256'],
-  getToken: (req) => (req.cookies.auth_token),
-};
-
-const setUser = async (req, res, next) => {
-  const { id } = req.user;
-  await User.findById(id, function(err, user) {
-    req.user = user;
-  });
-  next();
-};
-
-// middleware array to authenticate, then populate `req.user`
-const auth = [ejwt(jwt_options), setUser];
-
-
 // Auth routes
-app.get("/auth/google",
-  passport.authenticate("google", { scope: ["profile"] })
+app.get('/auth/user', auth, (req, res) => {
+  res.json({ user: req.user });
+});
+
+app.get('/auth/logout', (req, res) => {
+  res.clearCookie('auth_token');
+  res.redirect(process.env.CLIENT_URL);
+});
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile'] })
 );
 
-app.get("/auth/google/callback",
-  passport.authenticate("google", {
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
     session: false,
     failureRedirect: process.env.CLIENT_URL
   }),
@@ -103,15 +92,7 @@ app.get("/auth/google/callback",
   }
 );
 
-
-app.use('/', routes);
-
-// notice the `auth` middleware!
-app.get('/protected', auth, (req, res) => {
-  console.log('safe');
-  res.json(req.user);
-});
-
+app.use('/api', routes);
 
 if (process.argv.includes('dev')) {
   const PORT = process.env.PORT || 3001;

@@ -6,26 +6,16 @@ const userSchema = new mongoose.Schema({
   name: String,
   msg: String,
   googleId: String,
-  secret: String
+  secret: String,
+  clicks: { type: Number, default: 0 },
 });
 
 userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);
 
 const clickSchema = new mongoose.Schema({
-  count: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
-  session: {
-    type: Number,
-    required: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
+  count: Number,
+  session: Number,
 });
 
 const User = mongoose.model('User', userSchema);

@@ -1,23 +1,38 @@
 const express = require('express');
 const controllers = require('./controllers');
+const { auth } = require('./auth');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const clicks = await controllers.getClicks();
-  res.json(clicks);
+router.get('/click', async (req, res) => {
+  const totalClicks = await controllers.totalClicks();
+  const total = totalClicks[0].clicks;
+
+  res.json({ count: total });
 });
 
-router.post('/push', async (req, res) => {
-  const { session } = req.body;
-  const clicks = await controllers.addClick(session);
-  res.json(clicks);
+router.post('/click', auth, async (req, res) => {
+  const { user } = req;
+
+  if (!user) {
+    res.sendStatus(401);
+    return;
+  }
+
+  const id = user._id;
+  await controllers.doClick(id);
+  res.sendStatus(201);
 });
 
-router.get('/sum', async (req, res) => {
-  const clicks = await controllers.totalClicks();
-  const sum = clicks[0].clicks;
-  res.json({ sum });
+router.get('/user', auth, async (req, res) => {
+  const { user } = req;
+  if (!user) {
+    res.sendStatus(401);
+    return;
+  }
+
+  const { clicks } = req.user;
+  res.json({ count: clicks });
 });
 
 module.exports = router;

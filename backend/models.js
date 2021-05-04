@@ -1,6 +1,18 @@
 const mongoose = require('mongoose');
+const findOrCreate = require('mongoose-findorcreate');
+const passportLocalMongoose = require('passport-local-mongoose');
 
-const ClickSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
+  name: String,
+  msg: String,
+  googleId: String,
+  secret: String
+});
+
+userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
+
+const clickSchema = new mongoose.Schema({
   count: {
     type: Number,
     default: 0,
@@ -16,6 +28,7 @@ const ClickSchema = new mongoose.Schema({
   },
 });
 
-const Click = mongoose.model('Click', ClickSchema);
+const User = mongoose.model('User', userSchema);
+const Click = mongoose.model('Click', clickSchema);
 
-module.exports = { Click };
+module.exports = { Click, User };

@@ -9,50 +9,17 @@ const routes = require('./routes');
 // Authentication
 const ejwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const passportLocalMongoose = require('passport-local-mongoose');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
+const { User } = require('./models');
+
+
+// Standard web server stuff
 const app = express();
-
-// Auth config
-const JWT_secret = 'JWT_SECRET_KEY_HERE';
-
-// This is usually your database of users
-const users = [
-  { id: 0, username: 'elena', password: 'example', msg: 'hi!' },
-  { id: 1, username: 'eric', password: 'example', msg: 'hello' },
-];
-
-// Use whatever strategy, this is just for example
-passport.use(new LocalStrategy(function(username, password, cb) {
-  const user = users.filter((u) => {
-    return u.username === username && u.password === password
-  });
-
-  if (user.length === 1) {
-    return cb(null, user[0]);
-  } else {
-    return cb(null, false);
-  }
-}));
-
-// Auth middleware
-const jwt_options = {
-  secret: JWT_secret,
-  algorithms: ['sha1', 'RS256', 'HS256']
-};
-
-const setUser = (req, res, next) => {
-  const { id } = req.user;
-
-  // this is where you'd get user info from the database
-  user = users.filter((u) => (u.id === id));
-  req.user = user[0];
-
-  next();
-};
-
-const auth = [ejwt(jwt_options), setUser];
 
 mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
@@ -70,27 +37,81 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use('/', routes);
+app.use(cookieParser());
+
+
+// Auth config
+const JWT_secret = process.env.JWT_SECRET || 'secretkey';
+
+passport.use(User.createStrategy());
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: `${process.env.API_URL}/auth/google/callback`,
+    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    const user = {
+      googleId: profile.id,
+      name: profile.displayName,
+    };
+
+    User.findOrCreate(user, (err, user) => cb(err, user));
+  }
+));
+
+// Auth middleware
+const jwt_options = {
+  secret: JWT_secret,
+  algorithms: ['sha1', 'RS256', 'HS256'],
+  getToken: (req) => (req.cookies.auth_token),
+};
+
+const setUser = async (req, res, next) => {
+  const { id } = req.user;
+  await User.findById(id, function(err, user) {
+    req.user = user;
+  });
+  next();
+};
+
+// middleware array to authenticate, then populate `req.user`
+const auth = [ejwt(jwt_options), setUser];
+
 
 // Auth routes
-app.post('/login', function(req, res, next) {
-  // again, use whatever strategy you want
-  passport.authenticate('local', function(err, user, info) {
-    if (err) return next(err);
+app.get("/auth/google",
+  passport.authenticate("google", { scope: ["profile"] })
+);
 
-    if (!user) {
-      return res.status(401).json({ status: 'error', code: 'unauthorized' });
-    } else {
-      // important for JWTs!
-      return res.json({ token: jsonwebtoken.sign({id: user.id}, JWT_secret) });
-    }
-  })(req, res, next);
-});
+app.get("/auth/google/callback",
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: process.env.CLIENT_URL
+  }),
+  function(req, res) {
+    const token = jsonwebtoken.sign({id: req.user._id}, JWT_secret);
+    const options = {
+      secure: true,
+      httpOnly: true,
+      sameSite: true,
+    };
+
+    res.cookie('auth_token', token, options);
+    res.redirect(process.env.CLIENT_URL);
+  }
+);
+
+
+app.use('/', routes);
 
 // notice the `auth` middleware!
 app.get('/protected', auth, (req, res) => {
+  console.log('safe');
   res.json(req.user);
 });
+
 
 if (process.argv.includes('dev')) {
   const PORT = process.env.PORT || 3001;

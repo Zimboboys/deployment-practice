@@ -48,6 +48,15 @@ function Home(props) {
   const { user } = props;
   const authURL = `${process.env.REACT_APP_SERVER_URL}/auth`;
 
+  const logout = async () => {
+    await fetch(`${authURL}/logout`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+    });
+    window.location.reload();
+  };
+
   return (
     <>
       <h1>smern auth example</h1>
@@ -58,7 +67,7 @@ function Home(props) {
         <span>
           Hi {user.name}!
           {' - '}
-          <a href={`${authURL}/logout`}>logout</a>
+          <a href="/#" onClick={logout}>logout</a>
         </span>
       )) ||
       <a href={`${authURL}/google`}>

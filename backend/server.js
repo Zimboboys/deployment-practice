@@ -73,16 +73,13 @@ app.post('/auth/token', (req, res) => {
     httpOnly: true,
   };
 
-  // TODO see if this is needed in options
-  // sameSite: true
-
   res.cookie('auth_token', token, options);
   res.sendStatus(200);
 });
 
-app.get('/auth/logout', (req, res) => {
+app.post('/auth/logout', (req, res) => {
   res.clearCookie('auth_token');
-  res.redirect(process.env.CLIENT_URL);
+  res.sendStatus(200);
 });
 
 app.get('/auth/google',

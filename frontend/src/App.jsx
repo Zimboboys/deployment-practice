@@ -21,9 +21,10 @@ const SetAuthToken = () => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({token}),
-  });
+  })
+  .then(() => window.location.assign('/'));
 
-  return <Redirect push to="/" />;
+  return <p>Loading...</p>;
 };
 
 function App() {

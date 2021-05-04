@@ -1,42 +1,22 @@
-import React from 'react';
-import {
-  BrowserRouter,
-  Switch,
-  Route,
-  Link,
-} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
-import Example from './Example';
-import styles from './App.module.css';
+import Home from './Home';
+import './App.css';
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Switch>
-        <Route exact path='/'>
-          <Home />
-        </Route>
-        <Route path='/example'>
-          <Example />
-        </Route>
-      </Switch>
-    </BrowserRouter>
-  );
-}
+  const [user, setUser] = useState();
 
-function Home() {
-  return (
-    <div className={styles.app}>
-      <h1>SMERN</h1>
-      <p>
-        Deploy a MERN app, <em>serverlessly</em>
-      </p>
-      <Link to='/example'>
-        Example &rarr;
-      </Link>
-      <p>Documentation (coming soon)</p>
-    </div>
-  );
+  useEffect(() => {
+    const URL = `${process.env.REACT_APP_SERVER_URL}/auth/user`;
+    fetch(URL, {
+      credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(data => setUser(data.user))
+    .catch(err => console.error(err));
+  }, []);
+
+  return <Home user={user} />;
 }
 
 export default App;

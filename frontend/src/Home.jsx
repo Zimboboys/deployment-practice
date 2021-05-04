@@ -16,7 +16,7 @@ function ButtonExample({ user }) {
     const apiURL = `${process.env.REACT_APP_SERVER_URL}/api`;
     fetch(`${apiURL}/user`, { credentials: 'include' })
     .then(res => res.json())
-    .then(data => setUserClicks(data.count))
+    .then(data => setUserClicks(data.count || 0))
     .catch(err => console.error(err));
   }, []);
 

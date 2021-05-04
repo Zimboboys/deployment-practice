@@ -1,7 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  Redirect,
+  useParams
+} from 'react-router-dom';
 
 import Home from './Home';
 import './App.css';
+
+const SetAuthToken = () => {
+  const { token } = useParams();
+
+  fetch(`${process.env.REACT_APP_SERVER_URL}/auth/token`, {
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({token}),
+  });
+
+  return <Redirect push to="/" />;
+};
 
 function App() {
   const [user, setUser] = useState();
@@ -16,7 +39,16 @@ function App() {
     .catch(err => console.error(err));
   }, []);
 
-  return <Home user={user} />;
+  return (
+    <BrowserRouter>
+      <Switch>
+        <Route exact path="/">
+          <Home user={user} />
+        </Route>
+        <Route path="/auth/login/:token" component={SetAuthToken} />
+      </Switch>
+    </BrowserRouter>
+  );
 }
 
 export default App;

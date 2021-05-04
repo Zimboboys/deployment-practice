@@ -66,6 +66,21 @@ app.get('/auth/user', auth, (req, res) => {
   res.json({ user: req.user });
 });
 
+app.post('/auth/token', (req, res) => {
+  const token = req.body.token;
+  const options = {
+    secure: true,
+    httpOnly: true,
+    sameSite: true,
+  };
+
+  // TODO see if this is needed in options
+  // sameSite: true
+
+  res.cookie('auth_token', token, options);
+  res.sendStatus(200);
+});
+
 app.get('/auth/logout', (req, res) => {
   res.clearCookie('auth_token');
   res.redirect(process.env.CLIENT_URL);
@@ -82,14 +97,7 @@ app.get('/auth/google/callback',
   }),
   function(req, res) {
     const token = jsonwebtoken.sign({id: req.user._id}, JWT_secret);
-    const options = {
-      secure: true,
-      httpOnly: true,
-      sameSite: true,
-    };
-
-    res.cookie('auth_token', token, options);
-    res.redirect(process.env.CLIENT_URL);
+    res.redirect(`${process.env.CLIENT_URL}/auth/login/${token}`);
   }
 );
 

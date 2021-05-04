@@ -71,7 +71,6 @@ app.post('/auth/token', (req, res) => {
   const options = {
     secure: true,
     httpOnly: true,
-    sameSite: true,
   };
 
   // TODO see if this is needed in options

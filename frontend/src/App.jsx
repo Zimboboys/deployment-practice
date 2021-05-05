@@ -3,7 +3,6 @@ import {
   BrowserRouter,
   Route,
   Switch,
-  Redirect,
   useParams
 } from 'react-router-dom';
 

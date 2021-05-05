@@ -78,7 +78,13 @@ app.post('/auth/token', (req, res) => {
 });
 
 app.post('/auth/logout', (req, res) => {
-  res.clearCookie('auth_token');
+  const options = {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'none',
+  };
+
+  res.clearCookie('auth_token', options);
   res.sendStatus(200);
 });
 

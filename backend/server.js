@@ -72,6 +72,7 @@ app.post('/auth/token', (req, res) => {
   const options = {
     secure: true,
     httpOnly: true,
+    sameSite: 'none',
   };
 
   res.cookie('auth_token', token, options);

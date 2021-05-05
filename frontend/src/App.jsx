@@ -22,7 +22,8 @@ const SetAuthToken = () => {
     },
     body: JSON.stringify({token}),
   })
-  .then(() => window.location.assign('/'));
+  .then(res => console.log(res));
+  //.then(() => window.location.assign('/'));
 
   return <p>Loading...</p>;
 };

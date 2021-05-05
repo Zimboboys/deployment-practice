@@ -39,6 +39,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(cookieParser());
+app.set('trust proxy', true);
 
 
 // Auth config

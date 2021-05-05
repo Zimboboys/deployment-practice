@@ -49,12 +49,12 @@ function Home(props) {
   const authURL = `${process.env.REACT_APP_SERVER_URL}/auth`;
 
   const logout = async () => {
-    await fetch(`${authURL}/logout`, {
+    fetch(`${authURL}/logout`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
-    });
-    window.location.reload();
+    })
+    .then(() => window.location.reload());
   };
 
   return (

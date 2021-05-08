@@ -11,3 +11,7 @@
   - [Guide](backend/)
   - [IAM Policies](backend/IAM-policies)
   - [Environment Variables](backend/protected-env)
+
+- User Auth
+
+  - [Guide](auth/)

@@ -10,8 +10,6 @@ const routes = require('./routes');
 const jsonwebtoken = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const passportLocalMongoose = require('passport-local-mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { auth, JWT_secret } = require('./auth');
 

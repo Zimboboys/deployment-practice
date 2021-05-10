@@ -15,3 +15,6 @@
 - User Auth
 
   - [Guide](auth/)
+  - [Backend Configuration](auth/backend)
+  - [Frontend Configuration](auth/frontend)
+  - [Google OAuth Configuration](auth/google-oauth)

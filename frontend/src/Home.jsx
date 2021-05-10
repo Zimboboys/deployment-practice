@@ -14,6 +14,7 @@ function ButtonExample({ user }) {
 
   useEffect(() => {
     const apiURL = `${process.env.REACT_APP_SERVER_URL}/api`;
+
     fetch(`${apiURL}/user`, { credentials: 'include' })
     .then(res => res.json())
     .then(data => setUserClicks(data.count || 0))
@@ -21,12 +22,15 @@ function ButtonExample({ user }) {
   }, []);
 
   const doClick = () => {
-    fetch(`${process.env.REACT_APP_SERVER_URL}/api/click`, {
+    const apiURL = `${process.env.REACT_APP_SERVER_URL}/api`;
+
+    fetch(`${apiURL}/click`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
     });
 
+    // lazy update
     setTotalClicks(totalClicks + 1);
     setUserClicks(userClicks + 1);
   }
@@ -48,7 +52,7 @@ function Home(props) {
   const { user } = props;
   const authURL = `${process.env.REACT_APP_SERVER_URL}/auth`;
 
-  const logout = async () => {
+  const logout = () => {
     fetch(`${authURL}/logout`, {
       method: 'POST',
       mode: 'cors',
@@ -65,15 +69,12 @@ function Home(props) {
       <h2>try it yourself!</h2>
       {((user && user.name) && (
         <span>
-          Hi {user.name}!
-          {' - '}
+          {`Hi ${user.name}! - `}
           <a href="/#" onClick={logout}>logout</a>
         </span>
-      )) ||
-      <a href={`${authURL}/google`}>
-        Sign in with Google
-      </a>
-      }
+      )) || (
+        <a href={`${authURL}/google`}>Sign in with Google</a>
+      )}
 
       <ButtonExample user={user} />
 
